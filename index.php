@@ -214,19 +214,19 @@
                      <img src="assets/logo/societree_1.png" alt="Logo" class="logo">
                     
                     <!-- Login Form -->
-                    <form action="dashboard.php" method="POST">
+                    <form id="loginForm">
                         <div class="mb-3">
                             <h1 class="welcome-text">WELCOME</h1>
                         </div>
                         <div class="mb-3">
                             <label for="idNumber" class="form-label">ID NUMBER</label>
-                            <input type="text" class="form-control" id="idNumber" placeholder="Enter your ID number">
+                            <input type="text" class="form-control" id="idNumber" name="student_id" placeholder="Enter your ID number" required>
                         </div>
                         <div class="mb-3">
                             <label for="password" class="form-label">PASSWORD</label>
-                            <input type="password" class="form-control" id="password" placeholder="Enter your password">
+                            <input type="password" class="form-control" id="password" name="password" placeholder="Enter your password" required>
                         </div>
-                        <button type="submit" class="btn-login">LOGIN</button>
+                        <button type="submit" class="btn-login" id="loginBtn">LOGIN</button>
                         <div class="text-center">
                             <a href="#" class="forgot-password">FORGOT PASSWORD?</a>
                         </div>
@@ -242,7 +242,37 @@
     
     <!-- Custom JavaScript -->
     <script>
-        
+      (function(){
+        const form = document.getElementById('loginForm');
+        const btn = document.getElementById('loginBtn');
+        if (!form) return;
+        form.addEventListener('submit', async function(e){
+          e.preventDefault();
+          const student_id = document.getElementById('idNumber').value.trim();
+          const password = document.getElementById('password').value;
+          if (!student_id || !password) return;
+          const original = btn.textContent;
+          btn.disabled = true; btn.textContent = 'Signing in...';
+          try {
+            const res = await fetch('backend/login.php', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ student_id, password, accept_terms: true })
+            });
+            const data = await res.json().catch(()=>({success:false,message:'Invalid response'}));
+            if (res.ok && data && data.success) {
+              window.location.href = 'dashboard.php';
+            } else {
+              alert(data && data.message ? data.message : 'Login failed');
+            }
+          } catch(err) {
+            alert('Network error. Please try again.');
+          } finally {
+            btn.disabled = false; btn.textContent = original;
+          }
+        });
+      })();
     </script>
+
 </body>
 </html>
