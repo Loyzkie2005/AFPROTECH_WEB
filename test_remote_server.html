@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Remote Server Test</title>
+</head>
+<body>
+    <h1>Remote Server Connectivity Test</h1>
+    <div id="results"></div>
+    
+    <script>
+        async function testServer() {
+            const results = document.getElementById('results');
+            const urls = [
+                'http://103.125.219.236/societrees_web/modules/afprotech/backend/test_connection.php',
+                'http://103.125.219.236/modules/afprotech/backend/test_connection.php',
+                'http://103.125.219.236/societrees_web/modules/afprotech/backend/afprotechs_get_events.php',
+                'http://103.125.219.236/modules/afprotech/backend/afprotechs_get_events.php'
+            ];
+            
+            for (let url of urls) {
+                try {
+                    results.innerHTML += `<p>Testing: ${url}</p>`;
+                    const response = await fetch(url);
+                    const data = await response.json();
+                    results.innerHTML += `<p style="color: green;">✅ SUCCESS: ${JSON.stringify(data)}</p>`;
+                } catch (error) {
+                    results.innerHTML += `<p style="color: red;">❌ FAILED: ${error.message}</p>`;
+                }
+                results.innerHTML += '<hr>';
+            }
+        }
+        
+        // Test when page loads
+        testServer();
+    </script>
+</body>
+</html>
